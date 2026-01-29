@@ -10,7 +10,7 @@ import { connectDB } from "./lib/db.js";
 import { app as socketApp, server } from "./lib/socket.js";
 
 const __dirname = path.resolve();
-const PORT = ENV.PORT || 5000;
+const PORT = ENV.PORT || 3000;
 
 // Use the Express app from socket.js
 const app = socketApp;
