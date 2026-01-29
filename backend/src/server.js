@@ -7,29 +7,46 @@ import cors from "cors";
 import authRoutes from "./routes/auth.route.js";
 import messageRoutes from "./routes/message.route.js";
 import { connectDB } from "./lib/db.js";
-import { app, server } from "./lib/socket.js";
+import { app as socketApp, server } from "./lib/socket.js";
 
 const __dirname = path.resolve();
+const PORT = ENV.PORT || 5000;
 
-const PORT = ENV.PORT;
+// Use the Express app from socket.js
+const app = socketApp;
 
-app.use(express.json({ limit: '10mb' }));
-app.use(cors({origin: ENV.CLIENT_URL.replace(/\/$/, ''), credentials: true}));
+// Middleware
+app.use(express.json({ limit: "10mb" }));
+app.use(
+  cors({
+    origin: ENV.CLIENT_URL.replace(/\/$/, ""),
+    credentials: true,
+  })
+);
 app.use(cookieParser());
 
+// API routes
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 
-// make ready for deployment
+// Production frontend
 if (ENV.NODE_ENV === "production") {
-    app.use(express.static(path.join(__dirname, "../frontend/dist")));
+  const frontendPath = path.join(__dirname, "../frontend/dist");
+  app.use(express.static(frontendPath));
 
-    app.get("/:path(.*)", (_, res) => {
-        res.sendFile(path.join(__dirname, "../frontend", "dist", "index.html"));
-    });
+  // Catch-all route for React
+  app.get("/:path(.*)", (_, res) => {
+    res.sendFile(path.join(frontendPath, "index.html"));
+  });
 }
 
-server.listen(PORT, () => {
-    console.log(`Server is listening on http://localhost:${PORT}`);
-    connectDB();
+// Start server + DB connection
+server.listen(PORT, async () => {
+  console.log(`Server is listening on http://localhost:${PORT}`);
+  try {
+    await connectDB();
+    console.log("MongoDB connected successfully");
+  } catch (err) {
+    console.error("MongoDB connection failed:", err);
+  }
 });
