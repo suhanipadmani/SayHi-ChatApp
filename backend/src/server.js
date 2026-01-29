@@ -30,12 +30,14 @@ app.use("/api/messages", messageRoutes);
 
 if (ENV.NODE_ENV === "production") {
   const frontendPath = path.join(__dirname, "../frontend/dist");
+
   app.use(express.static(frontendPath));
 
-  app.get("*", (req, res) => {
+  app.use((req, res) => {
     res.sendFile(path.join(frontendPath, "index.html"));
   });
 }
+
 
 server.listen(PORT, async () => {
   console.log(`Server is listening on http://localhost:${PORT}`);
