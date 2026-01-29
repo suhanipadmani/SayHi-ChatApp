@@ -29,13 +29,12 @@ app.use(cookieParser());
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 
-// Production frontend
 if (ENV.NODE_ENV === "production") {
   const frontendPath = path.join(__dirname, "../frontend/dist");
   app.use(express.static(frontendPath));
 
-  // Catch-all route for React
-  app.get("/:path(.*)", (_, res) => {
+  // Catch-all for React routes
+  app.get("*", (req, res) => {
     res.sendFile(path.join(frontendPath, "index.html"));
   });
 }
