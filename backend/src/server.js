@@ -1,5 +1,5 @@
 import express from "express";
-import cookieParser from "cookie-parser"; 
+import cookieParser from "cookie-parser";
 import { ENV } from "./lib/env.js";
 import path from "path";
 import cors from "cors";
@@ -25,7 +25,6 @@ app.use(
 );
 app.use(cookieParser());
 
-// API routes
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 
@@ -33,13 +32,11 @@ if (ENV.NODE_ENV === "production") {
   const frontendPath = path.join(__dirname, "../frontend/dist");
   app.use(express.static(frontendPath));
 
-  // Catch-all for React routes
-  app.get("/:path(*)", (req, res) => {
+  app.get("/:anyPath(*)", (req, res) => {
     res.sendFile(path.join(frontendPath, "index.html"));
   });
 }
 
-// Start server + DB connection
 server.listen(PORT, async () => {
   console.log(`Server is listening on http://localhost:${PORT}`);
   try {
