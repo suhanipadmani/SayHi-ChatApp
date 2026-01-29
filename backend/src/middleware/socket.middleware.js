@@ -5,7 +5,7 @@ import { ENV } from "../lib/env.js";
 export const socketAuthMiddleware = async (socket, next) => {
     try {
         //extract token from http-only cookies
-        const token = socket.handshake.headers.cookie
+        const token = socket.handshake.auth?.token || socket.handshake.headers.cookie
             ?.split(";")
             .find((row) => row.startsWith("jwt="))
             ?.split("=")[1];
